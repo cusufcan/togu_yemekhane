@@ -16,9 +16,16 @@ class GopMenu extends StatefulWidget {
 
 class _GopMenuState extends State<GopMenu> {
   SharedManager? _sharedManager;
+  final ScrollController _scrollController = ScrollController();
   List<List<String>>? _data = List.empty(growable: true);
 
   Future<List<List<String>>> _init() async {
+    // ScrollController initialize et
+    // _scrollController = ScrollController();
+
+    // Her build edildiğinde listeyi temizle
+    _data = List.empty(growable: true);
+
     // SharedManager Initialize
     _sharedManager = SharedManager();
     await _sharedManager!.init();
@@ -96,10 +103,15 @@ class _GopMenuState extends State<GopMenu> {
       // Boş satırları kaldır
       lines.removeWhere((line) => line.isEmpty);
 
-      // Son iki satırı çıkar
-      if (lines.length >= 2) {
-        lines.removeRange(lines.length - 2, lines.length);
-      }
+      // Son iki satırı birleştir
+      final lastElement = lines.removeLast();
+      final secondLastElement = lines.removeLast();
+      lines.add('$secondLastElement $lastElement');
+
+      // // Son iki satırı çıkar
+      // if (lines.length >= 2) {
+      //   lines.removeRange(lines.length - 2, lines.length);
+      // }
 
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);
@@ -138,13 +150,16 @@ class _GopMenuState extends State<GopMenu> {
         future: _init(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return CustomScrollView(slivers: [
-              const SliverAppBar(
-                title: Text('Gop Yemekhane'),
-                floating: true,
-              ),
-              YemekhaneWidget(data: _data!),
-            ]);
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                const SliverAppBar(
+                  title: Text('Gop Yemekhane'),
+                  floating: true,
+                ),
+                YemekhaneWidget(data: _data!),
+              ],
+            );
           } else {
             return const Center(child: CircularProgressIndicator.adaptive());
           }

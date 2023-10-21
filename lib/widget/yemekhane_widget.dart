@@ -13,11 +13,12 @@ class YemekhaneWidget extends StatelessWidget {
     if (data.isEmpty) {
       return const Center(child: Text('N/A'));
     }
+    final int weekDay = _getWeekDay();
     return SliverList.builder(
       itemCount: data.length,
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+          padding: EdgeInsets.fromLTRB(8, index == 0 || index == 4 ? 16 : 8, 8, index == 0 || index == 4 ? 16 : 8),
           child: Row(
             children: [
               RotatedBox(
@@ -30,6 +31,7 @@ class YemekhaneWidget extends StatelessWidget {
               Expanded(
                 child: Card(
                   elevation: 3,
+                  color: weekDay != 0 && weekDay - 1 == index ? const Color.fromARGB(255, 184, 255, 184) : null,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
@@ -39,7 +41,21 @@ class YemekhaneWidget extends StatelessWidget {
                     ),
                   ),
                   child: Column(
-                    children: data.elementAt(index).map((e) => ListTile(title: Text(e.toString()))).toList(),
+                    children: data
+                        .elementAt(index)
+                        .map(
+                          (e) => ListTile(
+                            title: Text(
+                              e.toString(),
+                              style: TextStyle(
+                                fontWeight: data.elementAt(index).elementAt(data.elementAt(index).length - 1) == e
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ),
@@ -65,5 +81,11 @@ class YemekhaneWidget extends StatelessWidget {
       default:
         return 'N/A';
     }
+  }
+
+  int _getWeekDay() {
+    final DateTime now = DateTime.now();
+    final int weekDay = now.weekday;
+    return weekDay == 6 || weekDay == 7 ? 0 : weekDay;
   }
 }
