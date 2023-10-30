@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' as parser;
+// import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 
 class ImagesView extends StatefulWidget {
