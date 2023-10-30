@@ -1,3 +1,3 @@
-# mercan_app
+# Mercan App
 
 Mercan App
