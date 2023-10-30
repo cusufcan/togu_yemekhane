@@ -1,8 +1,8 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:flutter/material.dart';
 // import 'package:html/parser.dart' as parser;
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class ImagesView extends StatefulWidget {
   final String query;
@@ -32,16 +32,16 @@ class _ImagesViewState extends State<ImagesView> {
     // }
 
     // * PEXELS API (Türkçe dil sorunu var.)
-    const String apiKey = '4XqblWeuSSCCt2L7O8GkPvBZgZb659aW7gcL16vBjOeWYFtFqQlRIX0T';
-    String query = widget.query;
-    final url = Uri.parse('https://api.pexels.com/v1/search?query=$query Yemeği&per_page=3&locale=tr-TR');
-    final response = await http.get(url, headers: {'Authorization': apiKey});
-    final body = jsonDecode(response.body);
-    final List photos = body['photos'];
+    // const String apiKey = '4XqblWeuSSCCt2L7O8GkPvBZgZb659aW7gcL16vBjOeWYFtFqQlRIX0T';
+    // String query = widget.query;
+    // final url = Uri.parse('https://api.pexels.com/v1/search?query=$query Yemeği&per_page=3&locale=tr-TR');
+    // final response = await http.get(url, headers: {'Authorization': apiKey});
+    // final body = jsonDecode(response.body);
+    // final List photos = body['photos'];
 
-    for (var photo in photos) {
-      imageUrls.add(photo['src']['medium']);
-    }
+    // for (var photo in photos) {
+    //   imageUrls.add(photo['src']['medium']);
+    // }
     return imageUrls;
   }
 

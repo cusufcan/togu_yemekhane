@@ -29,6 +29,11 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
     _sharedManager = SharedManager();
     await _sharedManager!.init();
 
+    if (!_sharedManager!.hasKeyGlobal(SharedKeysGlobal.build5Last)) {
+      await _sharedManager!.clearAll();
+      _sharedManager!.saveStringItemGlobal(SharedKeysGlobal.build5Last, "true");
+    }
+
     // Kayıtlı veri var mı diye bak
     bool hasKey = _checkSaveData(SharedKeysGOP.dateHospital);
 
@@ -90,15 +95,19 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
   }
 
   Future<void> _saveData() async {
-    _sharedManager!.saveStringItem(SharedKeysGOP.dateHospital, await _getWeekDataOnline());
-    int a = 6;
-    for (var i = 0; i < 7; i++) {
-      _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(a), _data!.elementAt(0).elementAt(i));
-      a++;
-    }
-    for (var i = 0; i < 7; i++) {
-      _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(a), _data!.elementAt(1).elementAt(i));
-      a++;
+    if (_data != null) {
+      _sharedManager!.saveStringItem(SharedKeysGOP.dateHospital, await _getWeekDataOnline());
+      int a = 6;
+      for (var i = 0; i < 7; i++) {
+        _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(a), _data!.elementAt(0).elementAt(i));
+        a++;
+      }
+      for (var i = 0; i < 7; i++) {
+        _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(a), _data!.elementAt(1).elementAt(i));
+        a++;
+      }
+    } else {
+      debugPrint('Data NULL');
     }
   }
 

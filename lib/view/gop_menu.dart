@@ -27,6 +27,11 @@ class _GopMenuState extends State<GopMenu> {
     _sharedManager = SharedManager();
     await _sharedManager!.init();
 
+    if (!_sharedManager!.hasKeyGlobal(SharedKeysGlobal.build5First)) {
+      await _sharedManager!.clearAll();
+      _sharedManager!.saveStringItemGlobal(SharedKeysGlobal.build5First, "true");
+    }
+
     // Kayıtlı veri var mı diye bak
     bool hasKey = _checkSaveData(SharedKeysGOP.dateGop);
 
@@ -78,9 +83,13 @@ class _GopMenuState extends State<GopMenu> {
   }
 
   Future<void> _saveData() async {
-    _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, await _getWeekDataOnline());
-    for (var i = 0; i < 5; i++) {
-      _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data!.elementAt(i));
+    if (_data != null) {
+      _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, await _getWeekDataOnline());
+      for (var i = 0; i < 5; i++) {
+        _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data!.elementAt(i));
+      }
+    } else {
+      debugPrint('Data NULL');
     }
   }
 

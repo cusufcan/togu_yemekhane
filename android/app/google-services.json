@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "889151150447",
+    "project_id": "mercan-app",
+    "storage_bucket": "mercan-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889151150447:android:9d226706a782d7b268b09a",
+        "android_client_info": {
+          "package_name": "com.mercan.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuoYmY2LVhSaUK754-0UWMqckS4eUWFVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
