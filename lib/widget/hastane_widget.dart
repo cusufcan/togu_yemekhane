@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 
 import '../util/app_helper.dart';
 
-class YemekhaneWidget extends StatelessWidget {
+class HastaneWidget extends StatefulWidget {
   final List<List<String>> data;
 
-  const YemekhaneWidget({
+  const HastaneWidget({
     super.key,
     required this.data,
   });
 
   @override
+  State<HastaneWidget> createState() => _HastaneWidgetState();
+}
+
+class _HastaneWidgetState extends State<HastaneWidget> {
+  @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
+    if (widget.data.isEmpty) {
       return const Center(child: Text('N/A'));
     }
     final int weekDay = _getWeekDay();
     return ListView.builder(
       physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
-      itemCount: data.length,
+      itemCount: widget.data.length,
       itemBuilder: (context, index) {
         return Padding(
           padding: EdgeInsets.fromLTRB(8, index == 0 || index == 4 ? 16 : 8, 8, index == 0 || index == 4 ? 16 : 8),
@@ -44,16 +49,17 @@ class YemekhaneWidget extends StatelessWidget {
                     ),
                   ),
                   child: Column(
-                    children: data
+                    children: widget.data
                         .elementAt(index)
                         .map(
                           (e) => ListTile(
                             title: Text(
                               e.toString(),
                               style: TextStyle(
-                                fontWeight: data.elementAt(index).elementAt(data.elementAt(index).length - 1) == e
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                                fontWeight:
+                                    widget.data.elementAt(index).elementAt(widget.data.elementAt(index).length - 1) == e
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                               ),
                             ),
                           ),

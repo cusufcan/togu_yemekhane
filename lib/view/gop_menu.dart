@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:mercan_app/constant/app_constant.dart';
 
 import '../data/shared_manager.dart';
 import '../widget/yemekhane_widget.dart';
@@ -16,13 +17,9 @@ class GopMenu extends StatefulWidget {
 
 class _GopMenuState extends State<GopMenu> {
   SharedManager? _sharedManager;
-  final ScrollController _scrollController = ScrollController();
   List<List<String>>? _data = List.empty(growable: true);
 
   Future<List<List<String>>> _init() async {
-    // ScrollController initialize et
-    // _scrollController = ScrollController();
-
     // Her build edildiğinde listeyi temizle
     _data = List.empty(growable: true);
 
@@ -31,7 +28,7 @@ class _GopMenuState extends State<GopMenu> {
     await _sharedManager!.init();
 
     // Kayıtlı veri var mı diye bak
-    bool hasKey = _checkSaveData(SharedKeys.date);
+    bool hasKey = _checkSaveData(SharedKeysGOP.dateGop);
 
     if (hasKey) {
       // Kayıtlı veriyi getir
@@ -49,7 +46,7 @@ class _GopMenuState extends State<GopMenu> {
     ];
   }
 
-  bool _checkSaveData(SharedKeys key) {
+  bool _checkSaveData(SharedKeysGOP key) {
     bool hasKey = _sharedManager!.hasKey(key);
     if (hasKey) {
       return true;
@@ -66,7 +63,7 @@ class _GopMenuState extends State<GopMenu> {
       String weekDataSaved = _getWeekDataSaved();
       if (weekDataOnline == weekDataSaved) {
         for (var i = 0; i < 5; i++) {
-          _data!.add(_sharedManager!.getStringItems(SharedKeys.values.elementAt(i)) ?? ['N/A']);
+          _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
         }
       } else {
         _getWebData();
@@ -74,16 +71,16 @@ class _GopMenuState extends State<GopMenu> {
     } else {
       debugPrint('İnternet olmadığı için en son kaydedilen veriyi getiriyorum.');
       for (var i = 0; i < 5; i++) {
-        _data!.add(_sharedManager!.getStringItems(SharedKeys.values.elementAt(i)) ?? ['N/A']);
+        _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
       }
     }
     return _data!;
   }
 
   Future<void> _saveData() async {
-    _sharedManager!.saveStringItem(SharedKeys.date, await _getWeekDataOnline());
+    _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, await _getWeekDataOnline());
     for (var i = 0; i < 5; i++) {
-      _sharedManager!.saveStringItems(SharedKeys.values.elementAt(i), _data!.elementAt(i));
+      _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data!.elementAt(i));
     }
   }
 
@@ -108,11 +105,6 @@ class _GopMenuState extends State<GopMenu> {
       final secondLastElement = lines.removeLast();
       lines.add('$secondLastElement $lastElement');
 
-      // // Son iki satırı çıkar
-      // if (lines.length >= 2) {
-      //   lines.removeRange(lines.length - 2, lines.length);
-      // }
-
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);
     }
@@ -130,7 +122,7 @@ class _GopMenuState extends State<GopMenu> {
   }
 
   String _getWeekDataSaved() {
-    String weekData = _sharedManager!.getStringItem(SharedKeys.date) ?? 'N/A';
+    String weekData = _sharedManager!.getStringItem(SharedKeysGOP.dateGop) ?? 'N/A';
     return weekData;
   }
 
@@ -146,20 +138,12 @@ class _GopMenuState extends State<GopMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text(AppConstants.titles['gop_menu']!)),
       body: FutureBuilder(
         future: _init(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                const SliverAppBar(
-                  title: Text('Gop Yemekhane'),
-                  floating: true,
-                ),
-                YemekhaneWidget(data: _data!),
-              ],
-            );
+            return YemekhaneWidget(data: _data!);
           } else {
             return const Center(child: CircularProgressIndicator.adaptive());
           }

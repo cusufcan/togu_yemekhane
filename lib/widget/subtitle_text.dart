@@ -8,7 +8,7 @@ class SubtitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      ' $text',
+      text,
       style: Theme.of(context).textTheme.titleMedium,
     );
   }

@@ -62,7 +62,7 @@ android {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+            storePassword keystoreProperties['storePassword']   
        }
     }
     buildTypes {
@@ -78,3 +78,5 @@ flutter {
 }
 
 dependencies {}
+
+android.buildTypes.release.ndk.debugSymbolLevel = ‘FULL’
