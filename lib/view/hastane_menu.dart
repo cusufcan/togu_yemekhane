@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:intl/intl.dart';
 import 'package:mercan_app/constant/app_constant.dart';
 
 import '../data/shared_manager.dart';
@@ -17,6 +18,7 @@ class HastaneMenu extends StatefulWidget {
 
 class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin {
   SharedManager? _sharedManager;
+  String? _weekDataGlobal;
   List<List<List<String>>>? _data = List.empty(growable: true);
 
   Future<List<List<List<String>>>> _init() async {
@@ -73,6 +75,7 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
       String weekDataOnline = await _getWeekDataOnline();
       String weekDataSaved = _getWeekDataSaved();
       if (weekDataOnline == weekDataSaved) {
+        _weekDataGlobal = weekDataOnline;
         for (var i = 6; i < 13; i++) {
           _data!.elementAt(0).add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
         }
@@ -84,6 +87,8 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
       }
     } else {
       debugPrint('İnternet olmadığı için en son kaydedilen veriyi getiriyorum.');
+      String weekDataSaved = _getWeekDataSaved();
+      _weekDataGlobal = weekDataSaved;
       for (var i = 6; i < 13; i++) {
         _data!.elementAt(0).add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
       }
@@ -96,7 +101,9 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
 
   Future<void> _saveData() async {
     if (_data != null) {
-      _sharedManager!.saveStringItem(SharedKeysGOP.dateHospital, await _getWeekDataOnline());
+      String weekDataOnline = await _getWeekDataOnline();
+      _sharedManager!.saveStringItem(SharedKeysGOP.dateHospital, weekDataOnline);
+      _weekDataGlobal = weekDataOnline;
       int a = 6;
       for (var i = 0; i < 7; i++) {
         _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(a), _data!.elementAt(0).elementAt(i));
@@ -187,8 +194,18 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
             if (snapshot.connectionState == ConnectionState.done) {
               return TabBarView(
                 children: [
-                  Container(key: const PageStorageKey(0), child: HastaneWidget(data: _data!.elementAt(0))),
-                  Container(key: const PageStorageKey(1), child: HastaneWidget(data: _data!.elementAt(1))),
+                  Container(
+                      key: const PageStorageKey(0),
+                      child: HastaneWidget(
+                        data: _data!.elementAt(0),
+                        weekData: weekData,
+                      )),
+                  Container(
+                      key: const PageStorageKey(1),
+                      child: HastaneWidget(
+                        data: _data!.elementAt(1),
+                        weekData: weekData,
+                      )),
                 ],
               );
             } else {
@@ -198,5 +215,12 @@ class _HastaneMenuState extends State<HastaneMenu> with TickerProviderStateMixin
         ),
       ),
     );
+  }
+
+  String get weekData {
+    String reversedData = _weekDataGlobal!.split('.').reversed.join('-');
+    DateTime tempDateFirst = DateTime.parse(reversedData);
+    DateTime tempDateLast = tempDateFirst.add(const Duration(days: 4));
+    return "${DateFormat('dd.MM.yyyy').format(tempDateFirst)} - ${DateFormat('dd.MM.yyyy').format(tempDateLast)}";
   }
 }

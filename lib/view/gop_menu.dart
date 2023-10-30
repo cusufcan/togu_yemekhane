@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:intl/intl.dart';
 import 'package:mercan_app/constant/app_constant.dart';
 
 import '../data/shared_manager.dart';
@@ -17,6 +18,7 @@ class GopMenu extends StatefulWidget {
 
 class _GopMenuState extends State<GopMenu> {
   SharedManager? _sharedManager;
+  String? _weekDataGlobal;
   List<List<String>>? _data = List.empty(growable: true);
 
   Future<List<List<String>>> _init() async {
@@ -67,6 +69,7 @@ class _GopMenuState extends State<GopMenu> {
       String weekDataOnline = await _getWeekDataOnline();
       String weekDataSaved = _getWeekDataSaved();
       if (weekDataOnline == weekDataSaved) {
+        _weekDataGlobal = weekDataOnline;
         for (var i = 0; i < 5; i++) {
           _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
         }
@@ -75,6 +78,8 @@ class _GopMenuState extends State<GopMenu> {
       }
     } else {
       debugPrint('İnternet olmadığı için en son kaydedilen veriyi getiriyorum.');
+      String weekDataSaved = _getWeekDataSaved();
+      _weekDataGlobal = weekDataSaved;
       for (var i = 0; i < 5; i++) {
         _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
       }
@@ -84,7 +89,9 @@ class _GopMenuState extends State<GopMenu> {
 
   Future<void> _saveData() async {
     if (_data != null) {
-      _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, await _getWeekDataOnline());
+      String weekDataOnline = await _getWeekDataOnline();
+      _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, weekDataOnline);
+      _weekDataGlobal = weekDataOnline;
       for (var i = 0; i < 5; i++) {
         _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data!.elementAt(i));
       }
@@ -152,12 +159,22 @@ class _GopMenuState extends State<GopMenu> {
         future: _init(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return YemekhaneWidget(data: _data!);
+            return YemekhaneWidget(
+              data: _data!,
+              weekData: weekData,
+            );
           } else {
             return const Center(child: CircularProgressIndicator.adaptive());
           }
         },
       ),
     );
+  }
+
+  String get weekData {
+    String reversedData = _weekDataGlobal!.split('.').reversed.join('-');
+    DateTime tempDateFirst = DateTime.parse(reversedData);
+    DateTime tempDateLast = tempDateFirst.add(const Duration(days: 4));
+    return "${DateFormat('dd.MM.yyyy').format(tempDateFirst)} - ${DateFormat('dd.MM.yyyy').format(tempDateLast)}";
   }
 }
