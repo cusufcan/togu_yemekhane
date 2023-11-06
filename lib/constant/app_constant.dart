@@ -1,12 +1,9 @@
 class AppConstants {
-  static const title = 'Mercan App';
+  static const title = 'TOGÜ Yemekhane';
 
   static const Map<String, String> titles = {
-    'app': 'Mercan App',
-    'gop_menu': 'GOP Menü',
-    'hastane_menu': 'Hastane Menü',
-    'ogle': 'Öğle',
-    'aksam': 'Akşam',
+    'app': 'TOGÜ Yemekhane',
+    'gop_menu': 'TOGÜ Menü',
   };
 
   static const Map<String, String> descriptions = {

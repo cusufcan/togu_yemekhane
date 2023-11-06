@@ -1,12 +1,15 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:intl/intl.dart';
-import 'package:mercan_app/constant/app_constant.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../constant/app_constant.dart';
 import '../data/shared_manager.dart';
+import '../widget/update_dialog.dart';
 import '../widget/yemekhane_widget.dart';
 
 class GopMenu extends StatefulWidget {
@@ -19,9 +22,31 @@ class GopMenu extends StatefulWidget {
 class _GopMenuState extends State<GopMenu> {
   SharedManager? _sharedManager;
   String? _weekDataGlobal;
-  List<List<String>>? _data = List.empty(growable: true);
+  List<List<String>> _data = List.empty(growable: true);
 
   Future<List<List<String>>> _init() async {
+    // Uygulamaya güncellemelerini kontrol et
+    bool hasNetwork = await _hasNetwork();
+    if (hasNetwork) {
+      var db = FirebaseFirestore.instance;
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final String buildNumber = packageInfo.buildNumber;
+      await db.collection("update").get().then((event) async {
+        var networkVersion = event.docs.elementAt(0).data()['version'];
+        var currentVersion = buildNumber;
+        if (networkVersion != currentVersion) {
+          await showDialog(
+            context: context,
+            builder: (context) => WillPopScope(
+              onWillPop: () => Future.value(false),
+              child: const UpdateDialog(),
+            ),
+            barrierDismissible: false,
+          );
+        }
+      });
+    }
+
     // Her build edildiğinde listeyi temizle
     _data = List.empty(growable: true);
 
@@ -71,7 +96,7 @@ class _GopMenuState extends State<GopMenu> {
       if (weekDataOnline == weekDataSaved) {
         _weekDataGlobal = weekDataOnline;
         for (var i = 0; i < 5; i++) {
-          _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
+          _data.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
         }
       } else {
         _getWebData();
@@ -81,22 +106,24 @@ class _GopMenuState extends State<GopMenu> {
       String weekDataSaved = _getWeekDataSaved();
       _weekDataGlobal = weekDataSaved;
       for (var i = 0; i < 5; i++) {
-        _data!.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
+        _data.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
       }
     }
-    return _data!;
+    return _data;
   }
 
   Future<void> _saveData() async {
-    if (_data != null) {
-      String weekDataOnline = await _getWeekDataOnline();
-      _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, weekDataOnline);
-      _weekDataGlobal = weekDataOnline;
-      for (var i = 0; i < 5; i++) {
-        _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data!.elementAt(i));
+    if (_data.isNotEmpty) {
+      if (_data.first != ['N/A']) {
+        String weekDataOnline = await _getWeekDataOnline();
+        _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, weekDataOnline);
+        _weekDataGlobal = weekDataOnline;
+        for (var i = 0; i < 5; i++) {
+          _sharedManager!.saveStringItems(SharedKeysGOP.values.elementAt(i), _data.elementAt(i));
+        }
+      } else {
+        debugPrint('Data NULL');
       }
-    } else {
-      debugPrint('Data NULL');
     }
   }
 
@@ -154,13 +181,16 @@ class _GopMenuState extends State<GopMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppConstants.titles['gop_menu']!)),
+      appBar: AppBar(
+        title: const Text(AppConstants.title),
+        centerTitle: true,
+      ),
       body: FutureBuilder(
         future: _init(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return YemekhaneWidget(
-              data: _data!,
+              data: _data,
               weekData: weekData,
             );
           } else {
@@ -171,10 +201,13 @@ class _GopMenuState extends State<GopMenu> {
     );
   }
 
-  String get weekData {
-    String reversedData = _weekDataGlobal!.split('.').reversed.join('-');
-    DateTime tempDateFirst = DateTime.parse(reversedData);
-    DateTime tempDateLast = tempDateFirst.add(const Duration(days: 4));
-    return "${DateFormat('dd.MM.yyyy').format(tempDateFirst)} - ${DateFormat('dd.MM.yyyy').format(tempDateLast)}";
+  String? get weekData {
+    String? reversedData = _weekDataGlobal?.split('.').reversed.join('-');
+    if (reversedData != null) {
+      DateTime tempDateFirst = DateTime.parse(reversedData);
+      DateTime tempDateLast = tempDateFirst.add(const Duration(days: 4));
+      return "${DateFormat('dd.MM.yyyy').format(tempDateFirst)} - ${DateFormat('dd.MM.yyyy').format(tempDateLast)}";
+    }
+    return null;
   }
 }

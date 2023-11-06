@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mercan_app/constant/app_constant.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../constant/app_constant.dart';
 
 class UpdateDialog extends StatelessWidget {
   const UpdateDialog({super.key});

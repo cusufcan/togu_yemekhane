@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mercan_app/service/push_notify.dart';
-import 'package:mercan_app/view/home_view.dart';
+import 'package:togu_yemekhane/view/gop_menu.dart';
 import 'dart:io';
 
 import 'firebase_options.dart';
+import 'service/push_notify.dart';
 
 Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
@@ -34,7 +34,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: HomeView(),
+      home: const GopMenu(),
     );
   }
 }

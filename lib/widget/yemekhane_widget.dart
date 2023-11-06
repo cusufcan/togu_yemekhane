@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mercan_app/widget/date_text.dart';
 
 import '../util/app_helper.dart';
+import 'date_text.dart';
 
 class YemekhaneWidget extends StatelessWidget {
-  final List<List<String>> data;
-  final String weekData;
+  final List<List<String>>? data;
+  final String? weekData;
 
   const YemekhaneWidget({
     super.key,
@@ -15,7 +15,7 @@ class YemekhaneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
+    if (data == null) {
       return const Center(child: Text('N/A'));
     }
     final int weekDay = _getWeekDay();
@@ -26,7 +26,7 @@ class YemekhaneWidget extends StatelessWidget {
         Expanded(
           child: ListView.builder(
             physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
-            itemCount: data.length,
+            itemCount: data!.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding:
@@ -53,16 +53,17 @@ class YemekhaneWidget extends StatelessWidget {
                           ),
                         ),
                         child: Column(
-                          children: data
+                          children: data!
                               .elementAt(index)
                               .map(
                                 (e) => ListTile(
                                   title: Text(
                                     e.toString(),
                                     style: TextStyle(
-                                      fontWeight: data.elementAt(index).elementAt(data.elementAt(index).length - 1) == e
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
+                                      fontWeight:
+                                          data!.elementAt(index).elementAt(data!.elementAt(index).length - 1) == e
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
                                     ),
                                   ),
                                 ),

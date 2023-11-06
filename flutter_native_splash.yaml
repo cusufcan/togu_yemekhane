@@ -1,9 +1,9 @@
 flutter_native_splash:
   # Splash screen background color.
-  color: "#6200ee"
+  color: "#FFFFFF"
   android_12:
     # Splash screen background color.
-    color: "#6200ee"
+    color: "#FFFFFF"
   # To hide the notification bar, use the fullscreen parameter.  Has no effect in web since web
   # has no notification bar.  Defaults to false.
   # NOTE: Unlike Android, iOS will not automatically show the notification bar when the app loads.

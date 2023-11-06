@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="Mercan App"
+        android:label="TOGÜ Yemekhane"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

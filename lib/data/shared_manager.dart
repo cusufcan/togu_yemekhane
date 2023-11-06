@@ -12,21 +12,6 @@ enum SharedKeysGOP {
   thursday,
   friday,
   dateGop,
-  mondayHO,
-  tuesdayHO,
-  wednesdayHO,
-  thursdayHO,
-  fridayHO,
-  saturdayHO,
-  sundayHO,
-  mondayAO,
-  tuesdayAO,
-  wednesdayAO,
-  thursdayAO,
-  fridayAO,
-  saturdayAO,
-  sundayAO,
-  dateHospital,
 }
 
 class SharedManager {
