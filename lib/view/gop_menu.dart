@@ -93,13 +93,13 @@ class _GopMenuState extends State<GopMenu> {
       debugPrint('İnternet olduğu için günleri kontrol edip ona göre veriyi getiriyorum.');
       String weekDataOnline = await _getWeekDataOnline();
       String weekDataSaved = _getWeekDataSaved();
+      _weekDataGlobal = weekDataOnline;
       if (weekDataOnline == weekDataSaved) {
-        _weekDataGlobal = weekDataOnline;
         for (var i = 0; i < 5; i++) {
           _data.add(_sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ?? ['N/A']);
         }
       } else {
-        _getWebData();
+        await _getWebData();
       }
     } else {
       debugPrint('İnternet olmadığı için en son kaydedilen veriyi getiriyorum.');
@@ -151,7 +151,7 @@ class _GopMenuState extends State<GopMenu> {
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);
     }
-
+    await _saveData();
     _data = returnData;
   }
 
