@@ -27,9 +27,12 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
-        appBarTheme: const AppBarTheme(
-          color: Color.fromARGB(255, 98, 0, 238),
-          shape: RoundedRectangleBorder(
+        appBarTheme: AppBarTheme(
+          color: const Color.fromARGB(255, 98, 0, 238),
+          systemOverlayStyle: const SystemUiOverlayStyle().copyWith(
+            statusBarColor: const Color.fromARGB(255, 98, 0, 238),
+          ),
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
           ),
         ),
