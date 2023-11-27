@@ -6,7 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../constant/app_constant.dart';
 
 class UpdateDialog extends StatelessWidget {
-  const UpdateDialog({super.key});
+  final bool isOptional;
+  const UpdateDialog({
+    super.key,
+    required this.isOptional,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +18,7 @@ class UpdateDialog extends StatelessWidget {
       title: const Text(AppConstants.update),
       actions: [
         TextButton(onPressed: goToGooglePlay, child: const Text('Güncelle')),
-        TextButton(onPressed: exitApplication, child: const Text('İptal')),
+        TextButton(onPressed: () => exitApplication(context), child: const Text('İptal')),
       ],
     );
   }
@@ -24,7 +28,7 @@ class UpdateDialog extends StatelessWidget {
     launchUrl(appUrl, mode: LaunchMode.externalApplication);
   }
 
-  void exitApplication() {
-    exit(0);
+  void exitApplication(BuildContext context) {
+    isOptional ? Navigator.pop(context) : exit(0);
   }
 }

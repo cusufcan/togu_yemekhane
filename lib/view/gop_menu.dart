@@ -33,15 +33,17 @@ class _GopMenuState extends State<GopMenu> {
       final String buildNumber = packageInfo.buildNumber;
       await db.collection("update").get().then((event) async {
         var networkVersion = event.docs.elementAt(0).data()['version'];
+        var isOptionalString = event.docs.elementAt(0).data()['isOptional'];
+        final bool isOptional = isOptionalString == "true" ? true : false;
         var currentVersion = buildNumber;
         if (networkVersion != currentVersion) {
           await showDialog(
             context: context,
             builder: (context) => WillPopScope(
-              onWillPop: () => Future.value(false),
-              child: const UpdateDialog(),
+              onWillPop: () => Future.value(isOptional),
+              child: UpdateDialog(isOptional: isOptional),
             ),
-            barrierDismissible: false,
+            barrierDismissible: isOptional,
           );
         }
       });
@@ -151,8 +153,8 @@ class _GopMenuState extends State<GopMenu> {
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);
     }
-    await _saveData();
     _data = returnData;
+    await _saveData();
   }
 
   Future<String> _getWeekDataOnline() async {
