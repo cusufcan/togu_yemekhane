@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
@@ -28,25 +29,76 @@ class _GopMenuState extends State<GopMenu> {
     // Uygulamaya güncellemelerini kontrol et
     bool hasNetwork = await _hasNetwork();
     if (hasNetwork) {
+      // Kullanıcının device tokenini sunucuya gönder ki giriş yaptığı belli olsun.
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+      final String deviceToken = await firebaseMessaging.getToken() ?? "";
+
       var db = FirebaseFirestore.instance;
+
+      // Kullanıcı banlanmış mı diye kontrol et
+      await db.collection("general").doc("blacklist").get().then((value) {
+        value.data()?.forEach((key, value) async {
+          if (key == deviceToken) {
+            await showDialog(
+              context: context,
+              builder: (context) => WillPopScope(
+                onWillPop: () => Future.value(false),
+                child: const UpdateDialog(
+                  isOptional: false,
+                  title: "Engellendiniz",
+                  content: "Kalıcı olarak engellenmiş gözüküyorsunuz. Geliştirici ile iletişime geçin.",
+                  button: "Tamam",
+                ),
+              ),
+              barrierDismissible: false,
+            );
+          }
+        });
+      });
+
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final String buildNumber = packageInfo.buildNumber;
-      await db.collection("update").get().then((event) async {
-        var networkVersion = event.docs.elementAt(0).data()['version'];
-        var isOptionalString = event.docs.elementAt(0).data()['isOptional'];
+      await db.collection("update").doc("version").get().then((event) async {
+        var networkVersion = event['version'];
+        var isOptionalString = event['isOptional'];
+        var title = event['title'];
+        var content = event['message'];
+        var button = event['button'];
+        List whiteList = event['whitelist'];
         final bool isOptional = isOptionalString == "true" ? true : false;
         var currentVersion = buildNumber;
-        if (networkVersion != currentVersion) {
+        if (networkVersion != currentVersion && !whiteList.contains(deviceToken)) {
           await showDialog(
             context: context,
             builder: (context) => WillPopScope(
               onWillPop: () => Future.value(isOptional),
-              child: UpdateDialog(isOptional: isOptional),
+              child: UpdateDialog(
+                isOptional: isOptional,
+                title: title,
+                content: content,
+                button: button,
+              ),
             ),
             barrierDismissible: isOptional,
           );
         }
       });
+
+      int loginTime = 0;
+      await db.collection("general").doc("devices").get().then((value) {
+        value.data()?.forEach((key, value) {
+          if (key == deviceToken) {
+            loginTime = value;
+          }
+        });
+      });
+
+      await db.collection("general").doc("devices").set(
+        {
+          deviceToken: ++loginTime,
+        },
+        SetOptions(merge: true),
+      );
     }
 
     // Her build edildiğinde listeyi temizle
@@ -137,6 +189,9 @@ class _GopMenuState extends State<GopMenu> {
     var data = document.getElementsByClassName('style19').toList();
     List<List<String>> returnData = [];
 
+    for (var element in data) {
+      debugPrint(element.text);
+    }
     for (var i = 5; i < data.length; i++) {
       // Her satırı al ve boşlukları temizle
       List<String> lines = data.elementAt(i).text.split('\n');
@@ -146,9 +201,11 @@ class _GopMenuState extends State<GopMenu> {
       lines.removeWhere((line) => line.isEmpty);
 
       // Son iki satırı birleştir
-      final lastElement = lines.removeLast();
-      final secondLastElement = lines.removeLast();
-      lines.add('$secondLastElement $lastElement');
+      if (lines.length > 1) {
+        final lastElement = lines.removeLast();
+        final secondLastElement = lines.removeLast();
+        lines.add('$secondLastElement $lastElement');
+      }
 
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);

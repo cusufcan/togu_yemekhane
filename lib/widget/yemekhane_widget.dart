@@ -73,38 +73,41 @@ class _YemekhaneWidgetState extends State<YemekhaneWidget> {
                             ),
                           ),
                           Expanded(
-                            child: Card(
-                              elevation: 3,
-                              color: weekDay != 0 && weekDay - 1 == index
-                                  ? const Color.fromARGB(255, 184, 255, 184)
-                                  : null,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(30),
-                                  topLeft: Radius.circular(30),
-                                  bottomRight: Radius.circular(300),
-                                  topRight: Radius.circular(300),
+                            child: Container(
+                              constraints: const BoxConstraints(minHeight: 150),
+                              child: Card(
+                                elevation: 3,
+                                color: weekDay != 0 && weekDay - 1 == index
+                                    ? const Color.fromARGB(255, 184, 255, 184)
+                                    : null,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(30),
+                                    topLeft: Radius.circular(30),
+                                    bottomRight: Radius.circular(300),
+                                    topRight: Radius.circular(300),
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                children: widget.data!
-                                    .elementAt(index)
-                                    .map(
-                                      (e) => ListTile(
-                                        title: Text(
-                                          e.toString(),
-                                          style: TextStyle(
-                                            fontWeight: widget.data!
-                                                        .elementAt(index)
-                                                        .elementAt(widget.data!.elementAt(index).length - 1) ==
-                                                    e
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
+                                child: Column(
+                                  children: widget.data!
+                                      .elementAt(index)
+                                      .map(
+                                        (e) => ListTile(
+                                          title: Text(
+                                            e.toString(),
+                                            style: TextStyle(
+                                              fontWeight: widget.data!
+                                                          .elementAt(index)
+                                                          .elementAt(widget.data!.elementAt(index).length - 1) ==
+                                                      e
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                    .toList(),
+                                      )
+                                      .toList(),
+                                ),
                               ),
                             ),
                           ),

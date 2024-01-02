@@ -14,5 +14,4 @@ class AppConstants {
 
   static const horizontalPaddingNormal = 20.0;
   static const appUrl = 'https://play.google.com/store/apps/details?id=com.mercan.app';
-  static const update = 'Güncelleme Mevcut';
 }

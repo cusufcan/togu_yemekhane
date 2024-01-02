@@ -7,17 +7,24 @@ import '../constant/app_constant.dart';
 
 class UpdateDialog extends StatelessWidget {
   final bool isOptional;
+  final String title;
+  final String content;
+  final String button;
   const UpdateDialog({
     super.key,
     required this.isOptional,
+    required this.content,
+    required this.title,
+    required this.button,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(AppConstants.update),
+      title: Text(title),
+      content: Text(content),
       actions: [
-        TextButton(onPressed: goToGooglePlay, child: const Text('Güncelle')),
+        TextButton(onPressed: goToGooglePlay, child: Text(button)),
         TextButton(onPressed: () => exitApplication(context), child: const Text('İptal')),
       ],
     );
