@@ -35,27 +35,6 @@ class _GopMenuState extends State<GopMenu> {
 
       var db = FirebaseFirestore.instance;
 
-      // Kullanıcı banlanmış mı diye kontrol et
-      await db.collection("general").doc("blacklist").get().then((value) {
-        value.data()?.forEach((key, value) async {
-          if (key == deviceToken) {
-            await showDialog(
-              context: context,
-              builder: (context) => WillPopScope(
-                onWillPop: () => Future.value(false),
-                child: const UpdateDialog(
-                  isOptional: false,
-                  title: "Engellendiniz",
-                  content: "Kalıcı olarak engellenmiş gözüküyorsunuz. Geliştirici ile iletişime geçin.",
-                  button: "Tamam",
-                ),
-              ),
-              barrierDismissible: false,
-            );
-          }
-        });
-      });
-
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final String buildNumber = packageInfo.buildNumber;
       await db.collection("update").doc("version").get().then((event) async {
@@ -108,9 +87,10 @@ class _GopMenuState extends State<GopMenu> {
     _sharedManager = SharedManager();
     await _sharedManager!.init();
 
-    if (!_sharedManager!.hasKeyGlobal(SharedKeysGlobal.build5First)) {
+    if (!_sharedManager!.hasKeyGlobal(SharedKeysGlobal.build12RESET)) {
       await _sharedManager!.clearAll();
-      _sharedManager!.saveStringItemGlobal(SharedKeysGlobal.build5First, "true");
+      await _sharedManager!.saveStringItemGlobal(SharedKeysGlobal.build12RESET, "true");
+      debugPrint("buraya girdi");
     }
 
     // Kayıtlı veri var mı diye bak
@@ -167,7 +147,7 @@ class _GopMenuState extends State<GopMenu> {
   }
 
   Future<void> _saveData() async {
-    if (_data.isNotEmpty) {
+    if (_data.isNotEmpty && _data.every((element) => !element.contains("Menü girilmemiş"))) {
       if (_data.first != ['N/A']) {
         String weekDataOnline = await _getWeekDataOnline();
         _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, weekDataOnline);
@@ -188,10 +168,6 @@ class _GopMenuState extends State<GopMenu> {
     final document = parser.parse(body);
     var data = document.getElementsByClassName('style19').toList();
     List<List<String>> returnData = [];
-
-    for (var element in data) {
-      debugPrint(element.text);
-    }
     for (var i = 5; i < data.length; i++) {
       // Her satırı al ve boşlukları temizle
       List<String> lines = data.elementAt(i).text.split('\n');

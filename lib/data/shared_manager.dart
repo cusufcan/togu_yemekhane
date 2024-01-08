@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum SharedKeysGlobal {
   build5First,
   build5Last,
+  build12RESET,
 }
 
 enum SharedKeysGOP {
