@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:togu_yemekhane/model/data.dart';
+import 'package:togu_yemekhane/model/day.dart';
 
 import '../constant/app_constant.dart';
 import '../data/shared_manager.dart';
@@ -31,7 +33,7 @@ class _HomeViewState extends _HomeViewModel {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return YemekhaneWidget(
-              data: _data,
+              data: _mealData,
               weekData: weekData,
             );
           } else {

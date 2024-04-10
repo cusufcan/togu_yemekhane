@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:togu_yemekhane/model/data.dart';
 
 import '../util/app_helper.dart';
 import 'date_text.dart';
 
 class YemekhaneWidget extends StatefulWidget {
-  final List<List<String>>? data;
+  final Data? data;
   final String? weekData;
 
   const YemekhaneWidget({
@@ -26,14 +27,16 @@ class _YemekhaneWidgetState extends State<YemekhaneWidget> {
   void initState() {
     super.initState();
     controller = AutoScrollController(
-      viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+      viewportBoundaryGetter: () =>
+          Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
       axis: Axis.vertical,
     );
   }
 
   Future<void> _init() async {
     weekDay = _getWeekDay();
-    await controller.scrollToIndex(weekDay != 0 ? weekDay - 1 : 0, preferPosition: AutoScrollPosition.begin);
+    await controller.scrollToIndex(weekDay != 0 ? weekDay - 1 : 0,
+        preferPosition: AutoScrollPosition.begin);
     controller.highlight(weekDay);
   }
 
@@ -53,8 +56,9 @@ class _YemekhaneWidgetState extends State<YemekhaneWidget> {
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 controller: controller,
-                physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
-                itemCount: widget.data!.length,
+                physics: const BouncingScrollPhysics(
+                    decelerationRate: ScrollDecelerationRate.fast),
+                itemCount: widget.data!.dailyMeals.length,
                 itemBuilder: (context, index) {
                   return AutoScrollTag(
                     index: index,
@@ -62,14 +66,20 @@ class _YemekhaneWidgetState extends State<YemekhaneWidget> {
                     key: ValueKey(index),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(
-                          8, index == 0 || index == 4 ? 16 : 8, 8, index == 0 || index == 4 ? 16 : 8),
+                          8,
+                          index == 0 || index == 4 ? 16 : 8,
+                          8,
+                          index == 0 || index == 4 ? 16 : 8),
                       child: Row(
                         children: [
                           RotatedBox(
                             quarterTurns: -1,
                             child: Text(
                               getDayName(index),
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(),
                             ),
                           ),
                           Expanded(
@@ -89,16 +99,26 @@ class _YemekhaneWidgetState extends State<YemekhaneWidget> {
                                   ),
                                 ),
                                 child: Column(
-                                  children: widget.data!
+                                  children: widget.data!.dailyMeals
                                       .elementAt(index)
+                                      .meals
                                       .map(
                                         (e) => ListTile(
                                           title: Text(
                                             e.toString(),
                                             style: TextStyle(
-                                              fontWeight: widget.data!
+                                              fontWeight: widget
+                                                          .data!.dailyMeals
                                                           .elementAt(index)
-                                                          .elementAt(widget.data!.elementAt(index).length - 1) ==
+                                                          .meals
+                                                          .elementAt(widget
+                                                                  .data!
+                                                                  .dailyMeals
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .meals
+                                                                  .length -
+                                                              1) ==
                                                       e
                                                   ? FontWeight.bold
                                                   : FontWeight.normal,

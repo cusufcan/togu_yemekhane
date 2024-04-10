@@ -3,42 +3,33 @@ part of 'home_view.dart';
 abstract class _HomeViewModel extends State<HomeView> {
   SharedManager? _sharedManager;
   String? _weekDataGlobal;
-  List<List<String>> _data = List.empty(growable: true);
+  Data _mealData = Data(dailyMeals: []);
 
-  Future<List<List<String>>> _init() async {
+  Future<Data> _init() async {
     // Her build edildiğinde listeyi temizle
-    _data = List.empty(growable: true);
+    _mealData = Data(dailyMeals: []);
 
     // SharedManager Initialize
     _sharedManager = SharedManager();
     await _sharedManager!.init();
-
-    if (!_sharedManager!.hasKeyGlobal(SharedKeysGlobal.build12RESET)) {
-      await _sharedManager!.clearAll();
-      await _sharedManager!
-          .saveStringItemGlobal(SharedKeysGlobal.build12RESET, "true");
-      debugPrint("buraya girdi");
-    }
 
     // Kayıtlı veri var mı diye bak
     bool hasKey = _checkSaveData(SharedKeysGOP.dateGop);
 
     if (hasKey) {
       // Kayıtlı veriyi getir
-      debugPrint(
-          'Kullanıcının kayıtlı verisi var ve kayıtlı veriyi getiriyorum.');
-      return _getSavedData();
+      return await _getSavedData();
     } else {
       // İnternetten veri getir
-      debugPrint(
-          'Kullanıcının kayıtlı verisi yok ve internetten veri çekiyorum.');
       await _getWebData();
       await _saveData();
     }
 
-    return [
-      ['N/A']
-    ];
+    return Data(
+      dailyMeals: [
+        DailyMeal(meals: ['N/A']),
+      ],
+    );
   }
 
   bool _checkSaveData(SharedKeysGOP key) {
@@ -50,47 +41,51 @@ abstract class _HomeViewModel extends State<HomeView> {
     }
   }
 
-  Future<List<List<String>>> _getSavedData() async {
+  Future<Data> _getSavedData() async {
     bool isOnline = await _hasNetwork();
     if (isOnline) {
-      debugPrint(
-          'İnternet olduğu için günleri kontrol edip ona göre veriyi getiriyorum.');
       String weekDataOnline = await _getWeekDataOnline();
       String weekDataSaved = _getWeekDataSaved();
       _weekDataGlobal = weekDataOnline;
       if (weekDataOnline == weekDataSaved) {
         for (var i = 0; i < 5; i++) {
-          _data.add(_sharedManager!
-                  .getStringItems(SharedKeysGOP.values.elementAt(i)) ??
-              ['N/A']);
+          _mealData.dailyMeals[i].meals.addAll(
+            _sharedManager!.getStringItems(
+                  SharedKeysGOP.values.elementAt(i),
+                ) ??
+                ['N/A'],
+          );
         }
       } else {
         await _getWebData();
       }
     } else {
-      debugPrint(
-          'İnternet olmadığı için en son kaydedilen veriyi getiriyorum.');
       String weekDataSaved = _getWeekDataSaved();
       _weekDataGlobal = weekDataSaved;
       for (var i = 0; i < 5; i++) {
-        _data.add(
-            _sharedManager!.getStringItems(SharedKeysGOP.values.elementAt(i)) ??
-                ['N/A']);
+        _mealData.dailyMeals[i].meals.addAll(
+          _sharedManager!.getStringItems(
+                SharedKeysGOP.values.elementAt(i),
+              ) ??
+              ['N/A'],
+        );
       }
     }
-    return _data;
+    return _mealData;
   }
 
   Future<void> _saveData() async {
-    if (_data.isNotEmpty &&
-        _data.every((element) => !element.contains("Menü girilmemiş"))) {
-      if (_data.first != ['N/A']) {
+    if (_mealData.dailyMeals.isNotEmpty &&
+        _mealData.dailyMeals.every(
+          (element) => !element.meals.contains("Menü girilmemiş"),
+        )) {
+      if (_mealData.dailyMeals.first != DailyMeal(meals: ['N/A'])) {
         String weekDataOnline = await _getWeekDataOnline();
         _sharedManager!.saveStringItem(SharedKeysGOP.dateGop, weekDataOnline);
         _weekDataGlobal = weekDataOnline;
         for (var i = 0; i < 5; i++) {
           _sharedManager!.saveStringItems(
-              SharedKeysGOP.values.elementAt(i), _data.elementAt(i));
+              SharedKeysGOP.values.elementAt(i), _mealData.dailyMeals[i].meals);
         }
       } else {
         debugPrint('Data NULL');
@@ -124,7 +119,13 @@ abstract class _HomeViewModel extends State<HomeView> {
       // Temizlenmiş metni gönderilecek veriye ekle
       returnData.add(lines);
     }
-    _data = returnData;
+
+    for (var i = 0; i < returnData.length; i++) {
+      _mealData.dailyMeals.add(DailyMeal(meals: returnData[i]));
+    }
+
+    debugPrint(_mealData.dailyMeals.toString());
+
     await _saveData();
   }
 

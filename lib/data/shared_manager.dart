@@ -1,11 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum SharedKeysGlobal {
-  build5First,
-  build5Last,
-  build12RESET,
-}
-
 enum SharedKeysGOP {
   monday,
   tuesday,
@@ -31,11 +25,6 @@ class SharedManager {
     await preferences?.setString(key.name, value);
   }
 
-  Future<void> saveStringItemGlobal(SharedKeysGlobal key, String value) async {
-    _checkPreferences();
-    await preferences?.setString(key.name, value);
-  }
-
   String? getStringItem(SharedKeysGOP key) {
     _checkPreferences();
     return preferences?.getString(key.name);
@@ -57,11 +46,6 @@ class SharedManager {
   }
 
   bool hasKey(SharedKeysGOP key) {
-    _checkPreferences();
-    return (preferences?.containsKey(key.name) ?? false);
-  }
-
-  bool hasKeyGlobal(SharedKeysGlobal key) {
     _checkPreferences();
     return (preferences?.containsKey(key.name) ?? false);
   }
