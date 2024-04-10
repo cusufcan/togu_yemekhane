@@ -1,17 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:togu_yemekhane/view/gop_menu.dart';
 import 'dart:io';
 
-import 'firebase_options.dart';
-import 'service/push_notify.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:togu_yemekhane/view/home_view.dart';
 
 Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseAPI().initNotification();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
@@ -37,7 +32,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const GopMenu(),
+      home: const HomeView(),
     );
   }
 }
@@ -46,6 +41,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
