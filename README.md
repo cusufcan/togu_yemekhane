@@ -1,3 +1,3 @@
-# Mercan App
+# TOGU Yemekhane
 
-Mercan App
+Tokat Gaziosmanpaşa Üniversitesi Sosyal Tesisler Yemekhane Menüsü'nü barındıran uygulama.
