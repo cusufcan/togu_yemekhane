@@ -28,7 +28,9 @@ class MainApp extends StatelessWidget {
             statusBarColor: const Color.fromARGB(255, 98, 0, 238),
           ),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(30),
+            ),
           ),
         ),
       ),

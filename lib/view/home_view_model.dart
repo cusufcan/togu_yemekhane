@@ -49,6 +49,7 @@ abstract class _HomeViewModel extends State<HomeView> {
       _weekDataGlobal = weekDataOnline;
       if (weekDataOnline == weekDataSaved) {
         for (var i = 0; i < 5; i++) {
+          _mealData.dailyMeals.add(DailyMeal(meals: []));
           _mealData.dailyMeals[i].meals.addAll(
             _sharedManager!.getStringItems(
                   SharedKeysGOP.values.elementAt(i),
