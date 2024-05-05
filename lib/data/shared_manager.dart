@@ -1,12 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum SharedKeysGOP {
+enum SharedKeys {
   monday,
   tuesday,
   wednesday,
   thursday,
   friday,
-  dateGop,
+  date,
 }
 
 class SharedManager {
@@ -20,32 +20,27 @@ class SharedManager {
     if (preferences == null) throw 'SharedNotInitializeException';
   }
 
-  Future<void> saveStringItem(SharedKeysGOP key, String value) async {
+  Future<void> saveStringItem(SharedKeys key, String value) async {
     _checkPreferences();
     await preferences?.setString(key.name, value);
   }
 
-  String? getStringItem(SharedKeysGOP key) {
+  String? getStringItem(SharedKeys key) {
     _checkPreferences();
     return preferences?.getString(key.name);
   }
 
-  Future<void> saveStringItems(SharedKeysGOP key, List<String> value) async {
+  Future<void> saveStringItems(SharedKeys key, List<String> value) async {
     _checkPreferences();
     await preferences?.setStringList(key.name, value);
   }
 
-  List<String>? getStringItems(SharedKeysGOP key) {
+  List<String>? getStringItems(SharedKeys key) {
     _checkPreferences();
     return preferences?.getStringList(key.name);
   }
 
-  Future<bool> removeItem(SharedKeysGOP key) async {
-    _checkPreferences();
-    return (await preferences?.remove(key.name)) ?? false;
-  }
-
-  bool hasKey(SharedKeysGOP key) {
+  bool hasKey(SharedKeys key) {
     _checkPreferences();
     return (preferences?.containsKey(key.name) ?? false);
   }

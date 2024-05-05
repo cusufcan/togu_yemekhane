@@ -1,21 +1,21 @@
 name: togu_yemekhane
-description: TOGU Yemekhane.
+description: TOGU Yemekhane
 publish_to: "none"
-version: 1.1.3+14
+version: 2.0.0+15
 
 environment:
   sdk: ">=3.1.3 <4.0.0"
 
 dependencies:
+  cloud_firestore: ^4.17.2
+  firebase_core: ^2.30.1
   flutter:
     sdk: flutter
-  flutter_native_splash: ^2.3.4
+  flutter_riverpod: ^2.5.1
   html: ^0.15.4
   http: ^1.1.0
   intl: ^0.19.0
-  package_info_plus: ^7.0.0
-  scroll_to_index: ^3.0.1
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
   url_launcher: ^6.2.1
 
 dev_dependencies:
@@ -26,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo.png

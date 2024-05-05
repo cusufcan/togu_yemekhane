@@ -1,25 +1,22 @@
-import 'package:togu_yemekhane/model/day.dart';
+import 'package:togu_yemekhane/model/menu.dart';
 
 class Data {
-  Data({required this.dailyMeals});
+  final List<Menu> dailyMeals;
+  String week;
 
-  final List<DailyMeal> dailyMeals;
+  Data({required this.dailyMeals, required this.week});
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      dailyMeals: List<DailyMeal>.from(
-          json['dailyMeals'].map((x) => DailyMeal.fromJson(x))),
+      dailyMeals: List<Menu>.from(json['dailyMeals']),
+      week: json['week'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'dailyMeals': dailyMeals.map((x) => x.toJson()).toList(),
+      'dailyMeals': dailyMeals,
+      'week': week,
     };
-  }
-
-  @override
-  String toString() {
-    return 'Data{dailyMeals: $dailyMeals}';
   }
 }

@@ -1,56 +1,93 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' as parser;
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:togu_yemekhane/model/data.dart';
-import 'package:togu_yemekhane/model/day.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:togu_yemekhane/provider/splash_provider.dart';
+import 'package:togu_yemekhane/util/app_helper.dart';
+import 'package:togu_yemekhane/widget/menu_widget.dart';
+import 'package:togu_yemekhane/widget/week_text.dart';
 
-import '../constant/app_constant.dart';
-import '../data/shared_manager.dart';
-import '../widget/yemekhane_widget.dart';
-
-part 'home_view_model.dart';
-
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends _HomeViewModel {
+class _HomeViewState extends ConsumerState<HomeView>
+    with TickerProviderStateMixin {
+  late final TabController _tabController;
+  int _weekDayIndex = -1;
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppConstants.title),
-        centerTitle: true,
-      ),
-      body: FutureBuilder(
-        future: _init(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return YemekhaneWidget(
-              data: _mealData,
-              weekData: weekData,
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator.adaptive());
-          }
-        },
-      ),
+  void initState() {
+    super.initState();
+    _weekDayIndex = getWeekDayIndex(DateTime.now());
+    _tabController = TabController(
+      length: 5,
+      initialIndex: _weekDayIndex == -1 ? 0 : _weekDayIndex,
+      vsync: this,
     );
   }
 
-  String? get weekData {
-    String? reversedData = _weekDataGlobal?.split('.').reversed.join('-');
-    if (reversedData != null) {
-      DateTime tempDateFirst = DateTime.parse(reversedData);
-      DateTime tempDateLast = tempDateFirst.add(const Duration(days: 4));
-      return "${DateFormat('dd.MM.yyyy').format(tempDateFirst)} - ${DateFormat('dd.MM.yyyy').format(tempDateLast)}";
-    }
-    return null;
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('TOGÜ Yemekhane'),
+          leading: Container(
+            margin: const EdgeInsets.only(left: 12),
+            width: 75,
+            height: 75,
+            child: Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.scaleDown,
+            ),
+          ),
+          centerTitle: true,
+          bottom: ref.watch(splashProvider).dailyMeals.isNotEmpty
+              ? TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  labelStyle: Theme.of(context).textTheme.titleMedium,
+                  tabs: const [
+                    Tab(text: 'Pazartesi'),
+                    Tab(text: 'Salı'),
+                    Tab(text: 'Çarşamba'),
+                    Tab(text: 'Perşembe'),
+                    Tab(text: 'Cuma'),
+                  ],
+                )
+              : null,
+        ),
+        body: ref.watch(splashProvider).dailyMeals.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: MenuWidget(
+                        tabController: _tabController,
+                        weekDayIndex: _weekDayIndex,
+                      ),
+                    ),
+                    const WeekText(),
+                  ],
+                ),
+              )
+            : const Center(child: Text('Veri yok...')),
+      ),
+    );
   }
 }

@@ -1,17 +1,29 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:togu_yemekhane/view/home_view.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:togu_yemekhane/firebase_options.dart';
+import 'package:togu_yemekhane/view/splash_view.dart';
 
-Future<void> main() async {
+void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
   ]);
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -21,20 +33,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(
-          color: const Color.fromARGB(255, 98, 0, 238),
-          systemOverlayStyle: const SystemUiOverlayStyle().copyWith(
-            statusBarColor: const Color.fromARGB(255, 98, 0, 238),
-          ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(30),
-            ),
-          ),
-        ),
-      ),
-      home: const HomeView(),
+      home: const SplashView(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
     );
   }
 }

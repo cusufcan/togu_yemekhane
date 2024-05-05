@@ -1,26 +1,37 @@
 {
   "project_info": {
-    "project_number": "889151150447",
-    "project_id": "mercan-app",
-    "storage_bucket": "mercan-app.appspot.com"
+    "project_number": "763403395852",
+    "firebase_url": "https://fir-test-eedbc.firebaseio.com",
+    "project_id": "fir-test-eedbc",
+    "storage_bucket": "fir-test-eedbc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:889151150447:android:9d226706a782d7b268b09a",
+        "mobilesdk_app_id": "1:763403395852:android:1feacf87918a19160b9f29",
         "android_client_info": {
           "package_name": "com.mercan.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "763403395852-k9p9mlioig7uolhc2tlbdcrdc2p5kcmj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBuoYmY2LVhSaUK754-0UWMqckS4eUWFVM"
+          "current_key": "AIzaSyAqOyshRw_8FGLmQiQZE8mQgoYopHGJ4V0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "763403395852-k9p9mlioig7uolhc2tlbdcrdc2p5kcmj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
