@@ -15,8 +15,8 @@
 
 <table>
     <tr>
-        <td><img src="assets/0.png" alt="1"></td>
-        <td><img src="assets/1.png" alt="2"></td>
+        <td><img src="assets/1.png" alt="1"></td>
+        <td><img src="assets/2.png" alt="2"></td>
     </tr>
 </table>
 
