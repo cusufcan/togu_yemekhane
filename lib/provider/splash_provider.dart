@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -66,10 +67,16 @@ class SplashNotifier extends StateNotifier<Data> {
     debugPrint('getWebData');
     final url =
         Uri.parse('https://sosyaltesisler.gop.edu.tr/yemekhane_menu.aspx');
-    final response = await http.get(url);
-    final document = parser.parse(response.body);
-    var data = document.getElementsByClassName('style19').toList();
-    _filterData(data);
+    try {
+      final response = await http.get(url).timeout(
+            const Duration(seconds: 15),
+          );
+      final document = parser.parse(response.body);
+      var data = document.getElementsByClassName('style19').toList();
+      _filterData(data);
+    } on TimeoutException catch (_) {
+      if (_manager.hasKey(SharedKeys.date)) _getSavedData();
+    }
   }
 
   void _filterData(List data) async {

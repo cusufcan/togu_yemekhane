@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:togu_yemekhane/provider/splash_provider.dart';
 import 'package:togu_yemekhane/util/app_helper.dart';
+import 'package:togu_yemekhane/view/card_web_view.dart';
+import 'package:togu_yemekhane/widget/menu_appbar.dart';
 import 'package:togu_yemekhane/widget/menu_widget.dart';
 import 'package:togu_yemekhane/widget/week_text.dart';
 
@@ -39,18 +41,13 @@ class _HomeViewState extends ConsumerState<HomeView>
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('TOGÜ Yemekhane'),
-          leading: Container(
-            margin: const EdgeInsets.only(left: 12),
-            width: 75,
-            height: 75,
-            child: Image.asset(
-              'assets/logo.png',
-              fit: BoxFit.scaleDown,
+        appBar: MenuAppbar(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CardWebView(),
             ),
           ),
-          centerTitle: true,
           bottom: ref.watch(splashProvider).dailyMeals.isNotEmpty
               ? TabBar(
                   controller: _tabController,
